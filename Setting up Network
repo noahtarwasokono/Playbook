@@ -1,1 +1,10 @@
+Configure Network IP, Gateway, Primary and Secondary DNS (Kali, Ubuntu, CentOS)
 
+**FOR KALI**
+1. ip a (check network, find interface)
+2. sudo nano /etc/network/interfaces (get to interfaces)
+3. auto eth0 (replace with interface)
+4. iface eth0 inet static
+5. (tab) address .../netmask, netmask, gateway, dns-nameservers (space after each new address)
+6. sudo systemctl restart networking 
+7. ip a (again, ensure all addresses are in there), ip route can use to check default gateway
