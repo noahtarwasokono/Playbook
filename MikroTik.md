@@ -10,7 +10,7 @@ ip service set ssh port=2200
 ip ssh set strong-crypto=yes
 ip service set winbox address=x.x.x.x/24
 /ip proxy set enabled=no
-‎```sh
+‎```
 
 # Set static IPs
 /ip address print 
