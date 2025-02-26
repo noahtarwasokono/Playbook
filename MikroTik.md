@@ -26,6 +26,7 @@ ip service set winbox address=x.x.x.x/24
 ```
 
 # Set up SSL certificate (assuming you have an existing cert)
+```sh
 /certificate
 add name=Server common-name=server
 sign Server
@@ -39,18 +40,24 @@ print detail
 
 /ip ssl set certificate=mySSL.crt key=mySSL.key
 /ip service set www-ssl certificate=mySSL.crt disabled=no
+```
 
 # User audit: Create a new user and disable admin/root
+```sh
 /user print
 /user set <idx or username> password="password"
 /user set <idx or username> address=x.x.x.x/yy
 /user add name=secureuser password="NewUserPass" group=full
 /user set admin disabled=yes or /user disable admin
+```
 
 # Restrict SSL access to a specific IP
+```sh
 /ip firewall filter add chain=input protocol=tcp dst-port=443 src-address=192.168.1.100 action=accept comment="Allow SSL from specific IP"
 /ip firewall filter add chain=input protocol=tcp dst-port=443 action=drop comment="Block all other SSL access"
+```
 
+```sh
 # Harden the machine further (adjust as needed)
 /system logging set action=memory
 /system logging add topics=info action=memory
@@ -63,4 +70,4 @@ print detail
     /ip firewall filter add chain=input action=drop comment=\"Drop everything else\"; \
 "
 /system script run HardenRouter
-
+```
