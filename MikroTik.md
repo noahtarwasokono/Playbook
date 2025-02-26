@@ -1,6 +1,8 @@
 # Ensure clean router before configuring anything else
+```sh
 /system reset-configuration no-defaults=yes skip-backup=yes
-
+# CHECK FOR UPDATES IN WinBox
+```
 
 ```sh
 /system identity set name=SecureRouter
@@ -108,8 +110,9 @@ print detail
 ```sh
 /interface list add name=LAN
 /interface list member add list=LAN interface=____
-/tool mac-server set allowed-interface-list=LAN
-/tool mac-server mac-winbox set allowed-interface-list=LAN
+/tool mac-server set allowed-interface-list=none
+/tool mac-server mac-winbox set allowed-interface-list=none
+/tool mac-server ping set enabled=no
 
 # Do the same in the MAC Winbox Server tab to block Mac Winbox connections from the internet.
 /tool mac-server mac-winbox set allowed-interface-list=none
@@ -119,25 +122,75 @@ print detail
 ```
 # Disable Neighbor Discovery & IP Connectivity Access
 ```sh
-/ip neighbor discovery-settings set discover-interface-list=LAN
+# PROTECT ROUTER
+/ip neighbor discovery-settings set discover-interface-list=none
+/tool bandwidth-server set enabled=no
+/ip dns set allow-remote-requests=no
+/ip proxy set enabled=no
+/ip socks set enabled=no
+/ip upnp set enabled=no
+/ip cloud set ddns-enabled=no update-time=no
+
 /ip firewall filter
-  add chain=input action=accept connection-state=established,related,untracked comment="accept established,related,untracked"
+  add chain=input action=accept connection-state=established comment="accept established,related,untracked"
   add chain=input action=drop connection-state=invalid comment="drop invalid"
   add chain=input in-interface=ether1 action=accept protocol=icmp comment="accept ICMP"
   add chain=input in-interface=ether1 action=accept protocol=tcp port=8291 comment="allow Winbox";
   add chain=input in-interface=ether1 action=drop comment="block everything else";
+  add action=drop chain=input # Drop everything else
+```
+
+# Protect LAN devices (Would I need to do this for IPv4 and 6?
+```sh
+/ip firewall address-list
+add address=x.x.x.x/yy comment=RFC6890 list=not_in_internet
+/ip firewall filter
+add action=fasttrack-connection chain=forward comment=FastTrack connection-state=established,related
+add action=accept chain=forward comment="Established, Related" connection-state=established,related
+add action=drop chain=forward comment="Drop invalid" connection-state=invalid log=yes log-prefix=invalid
+add action=drop chain=forward comment="Drop tries to reach not public addresses from LAN" dst-address-list=not_in_internet in-interface=bridge log=yes log-prefix=!public_from_LAN out-interface=!bridge
+add action=drop chain=forward comment="Drop incoming packets that are not NAT`ted" connection-nat-state=!dstnat connection-state=new in-interface=ether1 log=yes log-prefix=!NAT
+add action=jump chain=forward protocol=icmp jump-target=icmp comment="jump to ICMP filters"
+add action=drop chain=forward comment="Drop incoming from internet which is not public IP" in-interface=ether1 log=yes log-prefix=!public src-address-list=not_in_internet
+add action=drop chain=forward comment="Drop packets from LAN that do not have LAN IP" in-interface=bridge log=yes log-prefix=LAN_!LAN src-address=!192.168.88.0/24
+
+# Allow Only Needed ICMP Codes
+/ip firewall filter
+  add chain=icmp protocol=icmp icmp-options=0:0 action=accept \
+    comment="echo reply"
+  add chain=icmp protocol=icmp icmp-options=3:0 action=accept \
+    comment="net unreachable"
+  add chain=icmp protocol=icmp icmp-options=3:1 action=accept \
+    comment="host unreachable"
+  add chain=icmp protocol=icmp icmp-options=3:4 action=accept \
+    comment="host unreachable fragmentation required"
+  add chain=icmp protocol=icmp icmp-options=8:0 action=accept \
+    comment="allow echo request"
+  add chain=icmp protocol=icmp icmp-options=11:0 action=accept \
+    comment="allow time exceed"
+  add chain=icmp protocol=icmp icmp-options=12:0 action=accept \
+    comment="allow parameter bad"
+  add chain=icmp action=drop comment="deny all other types"
+```
+
+# Protecting the Clients
+```sh
+/ip firewall filter
+  add chain=forward action=fasttrack-connection connection-state=established,related \
+    comment="fast-track for established,related";
+  add chain=forward action=accept connection-state=established,related \
+    comment="accept established,related";
+  add chain=forward action=drop connection-state=invalid
+  add chain=forward action=drop connection-state=new connection-nat-state=!dstnat \
+    in-interface=ether1 comment="drop access to clients behind NAT from WAN"
 ```
 
 ```sh
 /system logging set action=memory
-/system logging add topics=info action=memory
-
-/system script add name="HardenRouter" source="\
-    /user set admin disabled=yes; \
-    /ip firewall filter add chain=input connection-state=invalid action=drop comment=\"Drop invalid connections\"; \
-    /ip firewall filter add chain=input protocol=icmp action=accept comment=\"Allow ICMP\"; \
-    /ip firewall filter add chain=input in-interface=ether1 action=accept comment=\"Allow LAN traffic\"; \
-    /ip firewall filter add chain=input action=drop comment=\"Drop everything else\"; \
-"
-/system script run HardenRouter
+# Logging for Firewall Drops
+/system logging add topics=firewall action=memory
+# Enable logging for SSH Login Attempts
+/system logging add topics=account,info action=memory
+/log print
+/log print where topics~"firewall/etc"
 ```
