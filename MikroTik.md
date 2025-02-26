@@ -1,7 +1,9 @@
+```sh
 /system identity set name=SecureRouter
 
 # Change password for the current user
 /user set 0 password="YourNewSecurePassword"
+```
 
 ‎```sh
 # Disable unnecessary services
