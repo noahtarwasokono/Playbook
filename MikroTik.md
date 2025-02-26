@@ -5,15 +5,17 @@
 /user set 0 password="YourNewSecurePassword"
 ```
 
-‎```sh
+‎
 # Disable unnecessary services
+```sh
 ip service disable telnetftp,etc
 ip service set ssh port=2200
 ip ssh set strong-crypto=yes
 ip service set winbox address=x.x.x.x/24
 /ip proxy set enabled=no
-‎```
+```
 
+```sh
 # Set static IPs
 /ip address print 
 /ip route print
@@ -21,6 +23,7 @@ ip service set winbox address=x.x.x.x/24
 /ip address add address=192.168.1.1/24 interface=ether1 comment="LAN"
 /ip address add address=172.18.0.1/16 interface=ether2 comment="WAN"
 /ping x.x.x.x
+```
 
 # Set up SSL certificate (assuming you have an existing cert)
 /certificate
