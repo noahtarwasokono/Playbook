@@ -3,12 +3,14 @@
 # Change password for the current user
 /user set 0 password="YourNewSecurePassword"
 
+‎```sh
 # Disable unnecessary services
 ip service disable telnetftp,etc
 ip service set ssh port=2200
 ip ssh set strong-crypto=yes
 ip service set winbox address=x.x.x.x/24
 /ip proxy set enabled=no
+‎```sh
 
 # Set static IPs
 /ip address print 
