@@ -1,5 +1,7 @@
 This is specifically for firewalls in [[Linux]] lol, like [[ufw]], firewalld, and iptables. Since I already have a note for ufw, this is gonna focus on the harder ones
 
+file:///C:/Users/njt12/Downloads/lecture8-CentOS7_RouterSetup%20(9).pdf
+
 ## iptables
 iptables is less forgiving than ufw. If you turn it on when the default deny is on, it will instantly cut any ssh sessions. When you restart it, any unsaved rules are gone.
 
