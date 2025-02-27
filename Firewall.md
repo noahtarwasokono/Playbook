@@ -22,8 +22,10 @@ sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 # save rules
 iptables-save > /etc/iptables/rules.v4
 ```
-## firewalld
+## firewalld 
 Typically this is useful for machines that have zones, such as a router. For this reason, you use in in NCAE on the Router machine. Firewalld needs the permanent flag on rules you want to keep and must reload for them to take effect
+
+https://www.karltarvas.com/centos-7-redirect-port-80-to-8080 
 
 Commands:
 ```sh
