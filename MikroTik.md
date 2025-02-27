@@ -13,6 +13,18 @@ https://mum.mikrotik.com/presentations/KH17/presentation_4162_1493374113.pdf
 /system reset-configuration no-defaults=yes skip-backup=yes
 # CHECK FOR UPDATES IN WinBox
 ```
+# Set up Network
+```sh
+# Set static IPs
+/ip address print 
+/ip route print
+/interface print
+/ip address add address=192.168.1.1/24 interface=ether1 comment="LAN"
+/ip address add address=172.18.0.1/16 interface=ether2 comment="WAN"
+/ip route add gateway=x.x.x.x
+/ping x.x.x.x
+/ping google.com # verify DNS request
+```
 
 ```sh
 /system identity set name=SecureRouter
@@ -67,18 +79,6 @@ ip service set winbox address=x.x.x.x/24
 /ip firewall nat
   add chain=dstnat protocol=tcp port=3389 in-interface=ether1 \
     action=dst-nat to-address=192.168.88.254
-```
-
-```sh
-# Set static IPs
-/ip address print 
-/ip route print
-/interface print
-/ip address add address=192.168.1.1/24 interface=ether1 comment="LAN"
-/ip address add address=172.18.0.1/16 interface=ether2 comment="WAN"
-/ip route add gateway=x.x.x.x
-/ping x.x.x.x
-/ping google.com # verify DNS request
 ```
 
 # Set up SSL certificate (assuming you have an existing cert)
