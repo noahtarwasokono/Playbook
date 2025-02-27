@@ -27,6 +27,8 @@ Typically this is useful for machines that have zones, such as a router. For thi
 
 https://www.karltarvas.com/centos-7-redirect-port-80-to-8080 
 
+file:///C:/Users/njt12/Downloads/lecture8-CentOS7_RouterSetup%20(10).pdf - Set up as Router
+
 Commands:
 ```sh
 # check rules
