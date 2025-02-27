@@ -1,3 +1,12 @@
+## Gameplan
+1. Password change
+2. Disable all services
+3. Set ips
+4. Set up an ssl certificate
+5. User audit (make a new user and disable admin and root)
+6. Enable www-ssl for a specific ip address and then jump in from there on ssl. Make sure that machine is hardened well.
+
+
 # Ensure clean router before configuring anything else
 ```sh
 /system reset-configuration no-defaults=yes skip-backup=yes
