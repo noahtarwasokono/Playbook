@@ -25,6 +25,10 @@ https://mum.mikrotik.com/presentations/KH17/presentation_4162_1493374113.pdf
 /ping x.x.x.x
 /ping google.com # verify DNS request
 ```
+# Login into website and add gateway, netmask, dns servers
+# Bridge all lan ports & allow NAT
+# New Port Mapping 
+- www-tcp or udp, add ports and addresses
 
 ```sh
 /system identity set name=SecureRouter
