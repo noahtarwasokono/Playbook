@@ -1,4 +1,7 @@
 This is a guide start to finish
+https://www.netwrix.com/linux_hardening_security_best_practices.html
+https://www.cyberciti.biz/tips/linux-security.html
+https://github.com/trimstray/linux-hardening-checklist/blob/master/README.md
 
 1. Check `.bashrc` for malicious aliases, `source ~/.bashrc` to enable changes
 2. Change your default password: `passwd <username>` will let you do this
