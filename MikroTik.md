@@ -5,6 +5,7 @@
 4. Set up an ssl certificate
 5. User audit (make a new user and disable admin and root)
 6. Enable www-ssl for a specific ip address and then jump in from there on ssl. Make sure that machine is hardened well.
+https://mum.mikrotik.com/presentations/KH17/presentation_4162_1493374113.pdf
 
 
 # Ensure clean router before configuring anything else
