@@ -10,41 +10,14 @@ https://mum.mikrotik.com/presentations/KH17/presentation_4162_1493374113.pdf
 https://medium.com/@im0nk3yar0und/securing-your-mikrotik-49cb28161f9e
 https://docs.google.com/presentation/d/1UoMm-LiSOnFZ5HNG5THTdnZB5XHnj_gbSHh_fwL8X5s/edit#slide=id.g3318869e36b_0_6
 
-
 # Ensure clean router before configuring anything else
 ```sh
 /system reset-configuration no-defaults=yes skip-backup=yes
 # CHECK FOR UPDATES IN WinBox
 ```
-# Set up Network
-```sh
-# Set static IPs
-/ip address print 
-/ip route print
-/interface print
-/ip address add address=192.168.1.1/24 interface=ether1 comment="LAN"
-/ip address add address=172.18.0.1/16 interface=ether2 comment="WAN"
-/ip route add gateway=x.x.x.x
-/ping x.x.x.x
-/ping google.com # verify DNS request
-```
-# Login into website and add gateway, netmask, dns servers
-# Bridge all lan ports & allow NAT
-# New Port Mapping 
-- www-tcp or udp, add ports and addresses
 
-```sh
-/system identity set name=SecureRouter
+# This is the base setup to get all machines up, and then from there can harden
 
-# Change password for the current user
-/user set 0 password="YourNewSecurePassword"
-# Use password generator tool, below is more secure
-/password
-
-/user remove admin
-```
-
-‎
 # Disable unnecessary services
 ```sh
 ip service disable telnetftp,etc
@@ -75,19 +48,32 @@ ip service set winbox address=x.x.x.x/24
 /ip cloud set ddns-enabled=no update-time=no # MikroTik dynamic name service or IP cloud
 ```
 
-# NAT Configuration (change source address to router public IP)
+Setup Network
 ```sh
-/ip firewall nat
-  add chain=srcnat out-interface=ether1 action=masquerade
+# Change password of admin to long password
+/ip address print 
+/ip route print
+/interface print
+/ip address add address=192.168.1.1/24 interface=ether1 comment="LAN"
+/ip address add address=172.18.0.1/16 interface=ether2 comment="WAN"
+/ip route add gateway=x.x.x.x
+/ping x.x.x.x
+/ping google.com # verify DNS request
 ```
 
-# Port Forwarding (if client device needs access over certain port)
-```sh
-/ip firewall nat
-  add chain=dstnat protocol=tcp port=3389 in-interface=ether1 \
-    action=dst-nat to-address=192.168.88.254
-```
+# (From website IP) Login into website and add gateway, netmask, dns servers, Bridge all lan ports & allow NAT, New Port Mapping 
+- www-tcp or udp, add ports and addresses
 
+```sh
+/system identity set name=SecureRouter
+
+# Change password for the current user
+/user set 0 password="YourNewSecurePassword"
+# Use password generator tool, below is more secure
+/password
+
+/user remove admin
+```
 # Set up SSL certificate (assuming you have an existing cert)
 ```sh
 /certificate
@@ -105,6 +91,12 @@ print detail
 /ip service set www-ssl certificate=mySSL.crt disabled=no
 ```
 
+# Restrict SSL access to a specific IP
+```sh
+/ip firewall filter add chain=input protocol=tcp dst-port=443 src-address=192.168.1.100 action=accept comment="Allow SSL from specific IP"
+/ip firewall filter add chain=input protocol=tcp dst-port=443 action=drop comment="Block all other SSL access"
+```
+
 # User audit: Create a new user and disable admin/root
 ```sh
 /user print
@@ -114,10 +106,17 @@ print detail
 /user set admin disabled=yes or /user disable admin
 ```
 
-# Restrict SSL access to a specific IP
+# NAT Configuration (change source address to router public IP)
 ```sh
-/ip firewall filter add chain=input protocol=tcp dst-port=443 src-address=192.168.1.100 action=accept comment="Allow SSL from specific IP"
-/ip firewall filter add chain=input protocol=tcp dst-port=443 action=drop comment="Block all other SSL access"
+/ip firewall nat
+  add chain=srcnat out-interface=ether1 action=masquerade
+```
+
+# Port Forwarding (if client device needs access over certain port)
+```sh
+/ip firewall nat
+  add chain=dstnat protocol=tcp port=3389 in-interface=ether1 \
+    action=dst-nat to-address=192.168.88.254
 ```
 
 
