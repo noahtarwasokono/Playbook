@@ -99,6 +99,82 @@ sudo firewall-cmd --reload
 ```
 
 # Backup Firewall
-```sh
+```sh 
+sudo apt install git -y  # Ubuntu/Debian  
+sudo ssh-keygen -t rsa -b 4096 -C "your-email@example.com"
 
+# Go to GitHub > Settings > SSH and GPG keys. Click New SSH Key, paste the key, and save it.
+cat ~/.ssh/id_rsa.pub
+# Test SSH connection
+ssh -T git@github.com
+
+# Clone the Repository to Your Firewall Machine
+mkdir -p ~/firewalld-backups
+cd ~/firewalld-backups
+git init
+git remote add origin git@github.com:<your-username>/firewalld-backups.git
+
+# Create Backup Script
+sudo nano /root/firewalld_backup.sh
+___________________________________________________________
+#!/bin/bash
+
+# Define variables
+BACKUP_DIR="/root/firewalld_backups"
+REPO_DIR="/root/firewalld-backups"
+BACKUP_FILE="firewalld-$(date +%F_%H-%M).tar.gz"
+ENCRYPTED_FILE="$BACKUP_FILE.gpg"
+LOG_FILE="/var/log/firewalld_monitor.log"
+GPG_RECIPIENT="your-email@example.com"  # Change this to your GPG key email
+DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/YOUR_WEBHOOK_HERE"  # Change this!
+
+# Ensure backup directory exists
+mkdir -p "$BACKUP_DIR"
+
+# Backup firewalld configuration
+tar -czf - /etc/firewalld | gpg --encrypt --recipient "$GPG_RECIPIENT" > "$BACKUP_DIR/$ENCRYPTED_FILE"
+
+# Move encrypted backup to the Git repository
+cp "$BACKUP_DIR/$ENCRYPTED_FILE" "$REPO_DIR"
+
+# Check for unauthorized changes
+cd "$REPO_DIR"
+if ! git diff --quiet; then
+    ALERT_MSG="🚨 WARNING: Firewall settings changed! Potential RED TEAM activity! 🚨"
+    echo "$(date): $ALERT_MSG" | tee -a "$LOG_FILE"
+
+    # Send Discord alert
+    curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"$ALERT_MSG\"}" "$DISCORD_WEBHOOK_URL"
+fi
+
+# Commit and push to GitHub with signed commit
+git config user.name "Firewall Backup"
+git config user.email "your-email@example.com"
+git add "$ENCRYPTED_FILE"
+git commit -S -m "Backup: $(date '+%Y-%m-%d %H:%M')"
+git push origin main
+
+# Keep only the last 10 backups in the repo
+ls -t "$REPO_DIR" | grep "firewalld-.*.tar.gz.gpg" | tail -n +11 | xargs -I {} rm -- "$REPO_DIR/{}" 2>/dev/null || true
+___________________________________________________________
+sudo chmod +x /root/firewalld_backup.sh
+sudo crontab -e
+*/2 * * * * /root/firewalld_backup.sh >> /var/log/firewalld_backup.log 2>&1
+*/2 * * * * git -C /root/firewalld-backups diff --quiet || echo "$(date): FIREWALL CHANGED!" >> /var/log/firewalld_monitor.log
+tail -f /var/log/firewalld_backup.log
+
+# Test Alert to Discord
+# Open Discord and go to the server where you want to receive alerts.
+# Click Server Settings > Integrations > Create Webhook.
+# Name it (e.g., Firewall Alerts), choose a channel, and copy the Webhook URL.
+echo "test" >> /etc/firewalld/testfile
+
+gpg --full-generate-key
+git config --global user.signingkey <your-key-id>
+git config --global commit.gpgsign true
+
+# Immutable Logs
+sudo chattr +i /var/log/firewalld_monitor.log
+# Restore Encrypted Backup
+gpg --decrypt /root/firewalld_backups/firewalld-<DATE>.tar.gz.gpg | tar -xz
 ```
