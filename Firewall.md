@@ -78,6 +78,13 @@ Setting DNS stuff for the router is cool, too
 # change the port but make sure to change the protocol, too
 sudo firewall-cmd --zone=external --add-forward-port=port=53:proto=udp:toport=53:toaddr=192.168.118.2 --permanent
 ```
+Allow ICMP Protocol
+```sh
+firewall-cmd --permanent --add-service=icmp
+firewall-cmd --reload
+firewall-cmd --permanent --add-rich-rule='rule family="ipv4" accept icmp type echo-request'
+firewall-cmd --reload
+```
 
 Commands:
 ```sh
