@@ -29,6 +29,24 @@ https://www.karltarvas.com/centos-7-redirect-port-80-to-8080
 
 file:///C:/Users/njt12/Downloads/lecture8-CentOS7_RouterSetup%20(10).pdf - Set up as Router
 
+Multi-Interface Configuration
+```sh
+# Find external and internal interfaces
+vi /etc/sysconfig/network-scripts/ifcfg-eth0 
+ZONE=external/internal
+systemctl restart network
+
+# IP Forwarding
+sudo vi /etc/sysctl.d/ip_forward.conf
+net.ipv4.ip_forward=1
+sysctl -p /etc/sysctl.d/ip_forward.conf
+
+# Enable IP Masquerading
+sudo firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -o
+eth0 -j MASQUERADE -s ${INTERNAL_IP}/${NETMASK}
+squerading
+```
+
 Commands:
 ```sh
 # check rules
@@ -55,8 +73,9 @@ sudo firewall-cmd --list-all-zones | less # check interfaces and services in eac
 sudo firewall-cmd --list-all --zone=public # limit output to one zone
 
 # change zones
-sudo firewall-cmd --change-interface=eth1 --zone=internal --permanent
-# if permanent is added, it will persist but it will not apply until restart
+sudo firewall-cmd --change-interface=eth1 --zone=external --permanent
+sudo firewall-cmd --set-default-zone=internal
+sudo firewall-cmd --complete-reload
 
 # port forwarding
 sudo firewall-cmd --zone=external --add-forward-port=port=80:proto=tcp:toport=80:toaddr=192.168.118.2 --permanent
