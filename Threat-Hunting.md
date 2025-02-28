@@ -5,6 +5,12 @@ information below as reference for some areas you may find anomolies.
 secure. If your infrastructure is in good shape, a dedicated 'analyst' might help you in the
 long run)
 
+TO-DO
+1. netstat, find reverse shells, other users
+2. Running processes
+3. Reboot
+4. Check logs
+
 # Protect
 ```sh
 #Check services
