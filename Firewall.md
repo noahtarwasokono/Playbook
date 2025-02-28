@@ -47,25 +47,6 @@ eth0 -j MASQUERADE -s ${INTERNAL_IP}/${NETMASK}
 squerading
 ```
 
-Commands:
-```sh
-# check rules
-sudo firewall-cmd --list-all-zones # without -zones is brief list
-sudo firewall-cmd --list-forward-ports
-
-# new default rule to DROP for all
-sudo firewall-cmd --zone=public --set-target=DROP --permanent
-# if you don't add permanent to the rule it will delete on reboot
-
-# add ssh, it will recognize and map service to protocol
-sudo firewall-cmd --zone=public --add-service=ssh --permanent
-
-sudo firewall-cmd --zone=public --add-forward-port=port=80:proto=tcp:toaddr=192.168.1.4:toport=80 --permanent
-
-# restart firewalld
-sudo firewall-cmd --reload
-```
-
 Let's go in order of the configuration we want for the router
 ```sh
 # view all your zones
@@ -75,6 +56,8 @@ sudo firewall-cmd --list-all --zone=public # limit output to one zone
 # change zones
 sudo firewall-cmd --change-interface=eth1 --zone=external --permanent
 sudo firewall-cmd --set-default-zone=internal
+sudo firewall-cmd --zone=internal --set-target=DROP --permanent
+sudo firewall-cmd --zone=external --set-target=DROP --permanent
 sudo firewall-cmd --complete-reload
 
 # port forwarding
@@ -94,4 +77,23 @@ Setting DNS stuff for the router is cool, too
 ```sh
 # change the port but make sure to change the protocol, too
 sudo firewall-cmd --zone=external --add-forward-port=port=53:proto=udp:toport=53:toaddr=192.168.118.2 --permanent
+```
+
+Commands:
+```sh
+# check rules
+sudo firewall-cmd --list-all-zones # without -zones is brief list
+sudo firewall-cmd --list-forward-ports
+
+# new default rule to DROP for all
+sudo firewall-cmd --zone=public --set-target=DROP --permanent
+# if you don't add permanent to the rule it will delete on reboot
+
+# add ssh, it will recognize and map service to protocol
+sudo firewall-cmd --zone=public --add-service=ssh --permanent
+
+sudo firewall-cmd --zone=public --add-forward-port=port=80:proto=tcp:toaddr=192.168.1.4:toport=80 --permanent
+
+# restart firewalld
+sudo firewall-cmd --reload
 ```
