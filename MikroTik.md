@@ -59,6 +59,10 @@ Setup Network
 /ip route add gateway=x.x.x.x
 /ping x.x.x.x
 /ping google.com # verify DNS request
+# Allow masquerading for internal to external
+/ip firewall nat print
+/ip firewall nat add chain=srcnat out-interface=<WAN-interface> action=masquerade
+/ip firewall filter add chain=forward action=accept in-interface=<LAN-interface> out-interface=<WAN-interface>
 ```
 
 # (From website IP) Login into website and add gateway, netmask, dns servers, Bridge all lan ports & allow NAT, New Port Mapping 
