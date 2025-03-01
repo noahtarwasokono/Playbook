@@ -5,6 +5,7 @@
 4. Set up an ssl certificate
 5. User audit (make a new user and disable admin and root)
 6. Enable www-ssl for a specific ip address and then jump in from there on ssl. Make sure that machine is hardened well.
+7. Enable masquerading and port forwarding so services can run
 
 https://mum.mikrotik.com/presentations/KH17/presentation_4162_1493374113.pdf
 https://medium.com/@im0nk3yar0und/securing-your-mikrotik-49cb28161f9e
