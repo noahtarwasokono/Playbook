@@ -390,6 +390,95 @@ function setup_iptables {
     sudo iptables-save | sudo tee $SAVE
 }
 
+################## HARDENING FUNCTIONS ##################
+
+# Secure SSH and remote access points (disable root login, password auth, enforce SSH keys)
+function secure_ssh {
+    print_banner "Securing SSH and remote access"
+    sudo sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+    sudo sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+    sudo systemctl restart sshd
+    sudo $pm install -y fail2ban
+    sudo systemctl enable fail2ban --now
+}
+
+# Disable and remove unused protocols and services
+function remove_unused_services {
+    print_banner "Removing unused protocols and services"
+    services=$(systemctl list-unit-files --type service | grep enabled | awk '{print $1}')
+    # Keep only essential, score-relevant competition services
+    for svc in $services; do
+        case $svc in
+            ssh|ufw|fail2ban|rsyslog|cron|proxmox*|pve*|systemd-journald)
+                # Essential, skip disabling
+                continue
+            ;;
+            *)
+                sudo systemctl disable $svc
+                sudo systemctl stop $svc
+            ;;
+        esac
+    done
+    sudo $pm autoremove -y
+}
+
+# Enable application logging
+function enable_logging {
+    print_banner "Enabling application logging"
+    sudo systemctl restart rsyslog
+    sudo journalctl --rotate
+    sudo journalctl --vacuum-time=7d
+}
+
+# Whitelist outbound TCP ports, force all web traffic through proxy
+function restrict_outbound_network {
+    print_banner "Configuring outbound network restrictions and proxy"
+    PROXY_IP="x.x.x.x"      # Set your proxy IP
+    PROXY_PORT="3128"       # Set your proxy port
+
+    # Drop direct web traffic, allow only proxy
+    sudo iptables -A OUTPUT -p tcp --dport 80 -j REJECT
+    sudo iptables -A OUTPUT -p tcp --dport 443 -j REJECT
+    sudo iptables -A OUTPUT -p tcp -d $PROXY_IP --dport $PROXY_PORT -j ACCEPT
+    sudo iptables-save | sudo tee /etc/iptables/rules.v4
+}
+
+# Install and configure vulnerability scanners
+function setup_vulnerability_scan {
+    print_banner "Installing vulnerability scanning tools"
+    sudo $pm install -y lynis clamav rkhunter
+    sudo lynis audit system | tee /var/log/lynis.log
+    sudo clamscan -r / | tee /var/log/clamav_scan.log
+    sudo rkhunter --check | tee /var/log/rkhunter.log
+}
+
+# Log all DNS queries and analyze for malicious domain activity
+function setup_dns_logging {
+    print_banner "Setting up DNS logging and analysis"
+    sudo $pm install -y dnstop
+    # Assumes 'eth0' interface; change if needed
+    sudo pkill dnstop
+    sudo nohup dnstop -l 100 eth0 > /var/log/dnstop.log 2>&1 &
+    echo "[*] Top DNS activity (update to block suspicious domains):"
+    awk '{print $2}' /var/log/dnstop.log | sort | uniq -c | sort -nr | head
+}
+
+# Regular audits: users, running processes, and system verification
+function regular_audit {
+    print_banner "Regular audit: users, processes, services"
+    echo "[*] User accounts:"
+    getent passwd | awk -F: '$3 >= 1000 {print $1}'
+    echo "[*] Running processes:"
+    ps aux --sort=-%mem | head
+    echo "[*] Running services:"
+    systemctl list-units --type=service | grep running
+    echo "[*] System logs (last 100 errors/warnings):"
+    sudo journalctl -n 100 | egrep "error|fail|unauthorized"
+}
+
+#####################################################
+
+
 function backups {
     print_banner "Backups"
     echo "[*] Would you like to backup any files?"
@@ -504,6 +593,14 @@ function main {
     disable_other_firewalls
     setup_ufw
     # setup_iptables
+
+ 	secure_ssh
+	remove_unused_services
+	enable_logging
+	restrict_outbound_network
+	setup_vulnerability_scan
+	setup_dns_logging
+	regular_audit
 
     backups
     setup_splunk
