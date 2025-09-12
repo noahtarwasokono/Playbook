@@ -1,4 +1,20 @@
-High Priority Services:
+## GAME PLAN (WINDOWS AND LINUX)
+- Kick out malicious users
+- Change default password and remove other default passwords on everything. (Team Packet, OS admin creds, all other application admin creds and rogue admin accounts). API's and cockpit servers also. 
+- Set up default ufw firewall, deny all incoming, allow outgoing (only for those that need, restrict others) for all hosts and network. Close all services that are not scored, outbound only established connections)
+- Patch any easily exploits (EternalBlue, PwnKit, ZeroLogon) or block ports they use. 
+- run hardening scripts in proxmox (secure remote access points and remote users, block unecessary network ports, disable and remove unused or uneedful protocols and services, enable application logging, perform vulerability scans)
+- Complete inject before tryout
+- Harden, harden, harden
+  - Sysinternals Suite (Find red team activity)
+  - whitelist outbound ports allowed and restrict everything else (TCP is important)
+  - Force all web traffic through proxy server to prevent malware from getting out
+  - Configure sensor to log all DNS queries and sor log to see which domains have most activity. Ones with most are usually malicious. Block it. (OR ISOLATE INTERNAL WORKSTATIONS AND SERVERS AND LET PROXY SERVER HANDLE)
+  - Regularly audit user access, running processes, running services, and kill strange processses. Read logs and verify system configuration. Limit services to only scored services and take unecessary host offline. 
+- Threat hunt (for malware)
+- Complete injects (2 & 3)
+
+### High Priority Services:
 Service ID 4: SSH Service (Port 22, Linux)
 Reason for High Priority: SSH is a crucial entry point for system management. If compromised, attackers can gain full control over the machine.
 How to Fix: Change the default credentials immediately from the weak vagrant:vagrant to a strong password.
@@ -20,7 +36,7 @@ bash
 Copy code
 sudo systemctl restart ssh
 
-Service ID 10: Remote Desktop (Port 3389, Windows)
+### Service ID 10: Remote Desktop (Port 3389, Windows)
 Reason for High Priority: RDP is a common attack vector for Windows systems and is critical if the attacker gains access.
 How to Fix: Change the weak credentials (greedo:hanSh0tF1rst) to a strong password. Disable RDP if not required for the competition.
 Mitigate: Restrict access to RDP by allowing only trusted IPs via Windows Firewall.
@@ -41,7 +57,7 @@ powershell
 Copy code
 Disable-WindowsOptionalFeature -Online -FeatureName smb1protocol
 
-Service ID 3: FTP Service (Port 21, Linux)
+### Service ID 3: FTP Service (Port 21, Linux)
 Reason for High Priority: FTP transfers files in plain text, making it susceptible to sniffing and man-in-the-middle attacks. Default credentials (vagrant:vagrant) pose a significant risk.
 How to Fix: Change default credentials immediately. Consider switching to a secure alternative like SFTP.
 Mitigate: Restrict access to the FTP server, limit connections to trusted IPs, and disable anonymous FTP access.
@@ -53,7 +69,7 @@ Mitigate: Restrict access to trusted IPs via firewall and implement stronger aut
 Harden: Move to a more secure file transfer protocol like SFTP.
 
 Medium Priority Services:
-Service ID 1: Drupal Website (Port 80, Linux)
+### Service ID 1: Drupal Website (Port 80, Linux)
 Reason for Medium Priority: While web applications are common targets for attacks like SQL injection, Drupal’s default credentials (metasploitable:newpwd) present a significant risk.
 How to Fix: Change credentials immediately and ensure all plugins and themes are updated.
 Mitigate: Disable any unnecessary modules in Drupal, and restrict access to the admin page.
@@ -70,7 +86,7 @@ Mitigate: Use a firewall to restrict public access to the web service.
 Harden: Use SSL/TLS (HTTPS) to encrypt traffic.
 
 Low Priority Services:
-Service ID 12: Blog (Port 8585, Windows)
+### Service ID 12: Blog (Port 8585, Windows)
 Reason for Low Priority: A blog on a non-standard port might be less likely to be directly targeted, but weak credentials (vagrant:vagrant) make it vulnerable.
 How to Fix: Change the default credentials immediately and review the security of the blog CMS (likely WordPress or similar).
 Mitigate: Restrict access via firewall and keep the CMS up to date with security patches.
@@ -86,15 +102,15 @@ How to Fix: Ensure that the service has strong authentication mechanisms and res
 Mitigate: Only allow trusted IPs to connect to the IRC service.
 Harden: Implement SSL for secure communication and monitor for unusual traffic.
 
-General Security Practices to Apply Across All Services:
-Change Default Credentials: Every service has default credentials that must be changed immediately to something secure.
-Enable Firewalls: Ensure that the firewall is configured on both Linux and Windows to restrict access to services only from trusted IPs.
-Use Strong Authentication: Implement strong password policies and, where applicable, use two-factor authentication (2FA).
-Apply Patches and Updates: Ensure that all services and the underlying operating systems are fully patched with the latest security updates.
-Monitor Logs: Continuously monitor service logs (e.g., /var/log/apache2/access.log or Windows Event Logs) for signs of compromise or unusual behavior.
-Backup Critical Services: Ensure backups are in place for critical services (e.g., web applications, databases) so that they can be restored in the event of an attack.
+### General Security Practices to Apply Across All Services:
+- Change Default Credentials: Every service has default credentials that must be changed immediately to something secure.
+- Enable Firewalls: Ensure that the firewall is configured on both Linux and Windows to restrict access to services only from trusted IPs.
+- Use Strong Authentication: Implement strong password policies and, where applicable, use two-factor authentication (2FA).
+- Apply Patches and Updates: Ensure that all services and the underlying operating systems are fully patched with the latest security updates.
+- Monitor Logs: Continuously monitor service logs (e.g., /var/log/apache2/access.log or Windows Event Logs) for signs of compromise or unusual behavior.
+- Backup Critical Services: Ensure backups are in place for critical services (e.g., web applications, databases) so that they can be restored in the event of an attack.
 
-Hardening
+### Hardening
 
 Injects
 Fire walls, W
