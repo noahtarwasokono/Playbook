@@ -56,3 +56,25 @@ sudo iptables -A FORWARD -i eth0 -o eth1 -j DROP
 ```
 
 ##### Step 7: Set Client Default Gateway
+Configure internal workstations' default gateway to point to this proxy/firewall machine.
+
+#### Windows: Proxy and Firewall Setup
+
+##### Step 1: Set System Proxy Settings via PowerShell or Group Policy
+For manual PowerShell (run as Administrator), replace proxy address and port (e.g., 192.168.1.10:3128):
+```sh
+netsh winhttp set proxy 192.168.1.10:3128
+```
+
+Or via Windows GUI
+- Settings > Network & Internet > Proxy > Use a proxy server (enable and set IP and port)
+- For domain environments, use Group Policy under: User Configuration > Policies > Windows Settings > Internet Explorer Maintenance > Connection > Proxy Settings
+
+##### Step 2: Block Direct Internet Access via Windows Firewall
+Open elevated PowerShell and run:
+```sh
+# Block outbound HTTP and HTTPS traffic except from proxy server
+New-NetFirewallRule -DisplayName "Block HTTP outbound" -Direction Outbound -Protocol TCP -RemotePort 80 -Action Block
+New-NetFirewallRule -DisplayName "Block HTTPS outbound" -Direction Outbound -Protocol TCP -RemotePort 443 -Action Block
+New-NetFirewallRule -DisplayName "Allow Proxy Server" -Direction Outbound -RemoteAddress 192.168.1.10 -Action Allow
+```
