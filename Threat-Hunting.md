@@ -11,6 +11,70 @@ TO-DO
 3. Reboot
 4. Check logs
 
+# Script to threat hunt
+```sh
+#!/bin/bash
+# Linux Threat Hunting Script - Forensics/IR/CCDC
+
+print_section() {
+    echo -e "\n########## $1 ##########\n"
+}
+
+# 1. Suspicious User Accounts (new privileged or unexpected users)
+print_section "Privileged or Unexpected Users"
+awk -F: '($3 == 0) {print}' /etc/passwd
+echo "[sudo/wheel members]:"
+grep -Ea 'sudo|wheel' /etc/group
+
+# 2. Processes running as root or with unusual parentage
+print_section "Running Suspicious Processes"
+ps -ef --forest | egrep "bash|sh|python|perl|nc|netcat|socat"
+echo "[Processes where PPID is 1 (init)]"
+ps -eo pid,ppid,cmd --sort=ppid | awk '$2==1 && $3!~/^(systemd|kthreadd|rc|init|cron)/{print}'
+
+# 3. Suspicious Open Ports/Network Listeners
+print_section "Suspicious Network Listeners"
+ss -tulpn | grep -v "127.0.0.1"
+echo "[Processes listening on unusual ports above 1024]:"
+ss -tulpn | awk '{print $5}' | sed 's/.*://' | grep -E '[0-9]+' | awk '$1>1024'
+
+# 4. Known Reverse Shell Patterns (hitlist from Sigma/IOCs)
+print_section "Searching for Reverse Shell Patterns in bash history"
+grep -E "bash -i|perl -e|nc -e|ncat -e|python -c|php -r|socat exec" /root/.bash_history /home/*/.bash_history 2>/dev/null
+pgrep -af "bash|nc|python|perl|socat|ncat"
+
+# 5. Crontabs, init scripts, rc.local, and unusual persistence
+print_section "Persistence Mechanisms (Crontab, RC Scripts, etc)"
+cat /etc/crontab 2>/dev/null
+ls -la /var/spool/cron/crontabs 2>/dev/null
+ls -la /etc/cron.* /etc/rc*.d/* /etc/init.d/* /etc/rc.local 2>/dev/null
+
+# 6. Shell initializations potentially abused
+print_section "Shell Auto-Run Files"
+for f in $(find /home -type f \( -name .bashrc -o -name .bash_profile -o -name .profile -o -name .zshrc \)); do
+    echo "### $f ###"
+    cat "$f"
+done
+
+# 7. Recent Files Modified (last day)
+print_section "Files modified in the last 24h (potential drops/payloads)"
+find /etc /root /tmp /var/tmp /home -type f -mtime -1 2>/dev/null
+
+# 8. Suspicious New SUID/SGID Files
+print_section "New SUID/SGID Files (last 7 days)"
+find / -perm /6000 -type f -mtime -7 2>/dev/null
+
+# 9. Abnormal Systemd Services
+print_section "Recently modified systemd services"
+find /etc/systemd/system /lib/systemd/system -type f -mtime -3
+
+# 10. Outbound Connections (new/foreign IPs)
+print_section "Current Outbound Connections"
+ss -tanp | grep ESTAB | grep -v 127.0.0.1
+
+echo -e "\n#### Threat Hunt Complete. Review logs for any anomalies above."
+```
+
 # Protect
 ```sh
 #Check services
