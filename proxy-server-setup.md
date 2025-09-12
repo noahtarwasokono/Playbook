@@ -1,6 +1,6 @@
 ### Here are step-by-step instructions with commands for forcing all web traffic through a proxy server to isolate internal workstations and servers, for both Linux and Windows environments.
 
-#### Linux: Transparent Proxy with Squid + Iptables
+### Linux: Transparent Proxy with Squid + Iptables
 
 ##### Step 1: Update System
 ```sh
@@ -58,7 +58,8 @@ sudo iptables -A FORWARD -i eth0 -o eth1 -j DROP
 ##### Step 7: Set Client Default Gateway
 Configure internal workstations' default gateway to point to this proxy/firewall machine.
 
-#### Windows: Proxy and Firewall Setup
+
+### Windows: Proxy and Firewall Setup
 
 ##### Step 1: Set System Proxy Settings via PowerShell or Group Policy
 For manual PowerShell (run as Administrator), replace proxy address and port (e.g., 192.168.1.10:3128):
