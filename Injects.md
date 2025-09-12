@@ -6,5 +6,5 @@
 - READ THE INJECT (treat like checklist)
 - TURN IN NO MATTER WHAT
 
-  ### Bad Qualities
-  - AI Written, Vague (unfocused screenshots), lacking explanations (be very specific in all instructions, never assume), overly verbose
+### Bad Qualities
+- AI Written, Vague (unfocused screenshots), lacking explanations (be very specific in all instructions, never assume), overly verbose
