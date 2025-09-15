@@ -4,6 +4,7 @@
 ###################### GLOBALS ######################
 LOG='/var/log/ccdc/harden.log'
 GITHUB_URL="https://raw.githubusercontent.com/BYU-CCDC/public-ccdc-resources/refs/heads/main"
+SPLUNK_URL="https://github.com/noahtarwasokono/Playbook/blob/main/splunk.sh"
 pm=""
 sudo_group=""
 ccdc_users=( "ccdcuser1" "ccdcuser2" )
@@ -571,7 +572,7 @@ function setup_splunk {
     print_banner "Installing Splunk"
     indexer_ip=$(get_input_string "What is the Splunk forward server ip? ")
 
-    wget $GITHUB_URL/splunk/splunk.sh --no-check-certificate
+    wget $SPLUNK_URL --no-check-certificate
     chmod +x splunk.sh
     ./splunk.sh -f $indexer_ip
 }
