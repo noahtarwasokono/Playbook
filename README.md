@@ -1,50 +1,51 @@
 ## GAME PLAN (WINDOWS AND LINUX)
-1. Hardening Script - 15 minutes (Gather every requirement you have written. Test hardening script on every machine and that services work. Lock down very well.)
+
+- Hardening Script - 15 minutes (Gather every requirement you have written. Test hardening script on every machine and that services work. Lock down very well.)
 (scripts should include this and where cannot do it manually quickly)
-- delete malicious users
-- change all passwords (Team packet, OS admin creds, application creds, API's and cockpit)
-- set up ufw firewall
-- close all services not scored, outbound only connections
-- secure remote access points and remote users
-- block ports not needed
-- disable and remove unused protocols and services
-- enable application logging
-- whitelist outbound ports allowed
-- force web traffic through proxy server
-- configure proxy to log all dns queries
-- make firewall proxy and log all DNS queries
-- make configs immutable (passwd, shadow, sudoers)
-- set up splunk
-(users, passwords, services, ports/protocols, firewall, splunk)
+  - delete malicious users
+  - change all passwords (Team packet, OS admin creds, application creds, API's and cockpit)
+  - set up ufw firewall
+  - close all services not scored, outbound only connections
+  - secure remote access points and remote users
+  - block ports not needed
+  - disable and remove unused protocols and services
+  - enable application logging
+  - whitelist outbound ports allowed
+  - force web traffic through proxy server
+  - configure proxy to log all dns queries
+  - make firewall proxy and log all DNS queries
+  - make configs immutable (passwd, shadow, sudoers)
+  - set up splunk
+  (users, passwords, services, ports/protocols, firewall, splunk)
 
-2. Set up proxy server - 5 minutes
+- Set up proxy server - 5 minutes
 
-3. Script to find vuln and then patch critical and high - 40 minutes 
-- rkhunter and lynis, Sysinternals Suite (download and run)
-- outdate software
-- misconfigurations
-- remote access
-- unpatched CVE's
-- cronjobs
-- wrong permissions
-- weird files with scripts
-- backdoors
-*FIX AS MUCH AS CAN IN AN HOUR*
+- Script to find vuln and then patch critical and high - 40 minutes 
+  - rkhunter and lynis, Sysinternals Suite (download and run)
+  - outdate software
+  - misconfigurations
+  - remote access
+  - unpatched CVE's
+  - cronjobs
+  - wrong permissions
+  - weird files with scripts
+  - backdoors
+  *FIX AS MUCH AS CAN IN AN HOUR*
 
-4. Get services up and running - 30 minutes (let cook for rest of the time)
-- find out prior to competition
-- maybe router, ssh, web server, a couple machines, ftp
+- Get services up and running - 30 minutes (let cook for rest of the time)
+  - find out prior to competition
+  - maybe router, ssh, web server, a couple machines, ftp
 
-5. Threat hunt - 5 hours
-- audit user access
-- running processes
-- running services
-- read logs
-- verify config files
-- follow threat hunting GitHub page
-- back up configuration files so can change back
+- Threat hunt - 5 hours
+  - audit user access
+  - running processes
+  - running services
+  - read logs
+  - verify config files
+  - follow threat hunting GitHub page
+  - back up configuration files so can change back
 
-6. Fill out injects 
+- Fill out injects 
 
 
 ### High Priority Services:
