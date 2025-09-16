@@ -34,7 +34,7 @@
 
 - Get services up and running - 30 minutes (let cook for rest of the time)
   - find out prior to competition
-  - router, linux and windows machine, web server,
+  - router, linux and windows machine (one will be web server, splunk indexer)
 
 - Threat hunt - 5 hours
   - audit user access
@@ -51,10 +51,10 @@
 - Day 1: Tested VM's. Proxy worked for a bit then did not. Windows needs to run in admin to run script. Linux hardening worked but messed up terminal. 
 - Day 2: Test this process, record specific scripts and commands, no matter how long it takes, Just go through entire process. 
 - Day 3: Repeat day 2 but fast
-- Day 4: Repeat but faster (practice in Metaspoitable)
-- Day 5: Repeat but faster and smoother (practice in Metaspoitable)
-- Day 6: Repeat but fast and smoother (practice in Metaspoitable)
-- Day 7: Review progress, any more notes, improvements? (practice in Metaspoitable)
+- Day 4: Repeat but faster, set up Web Server, Router, and SSH. (practice in Metaspoitable)
+- Day 5: Repeat but faster and smoother, set up Web Server, Router, and SSH. (practice in Metaspoitable)
+- Day 6: Repeat but fast and smoother, set up Web Server, Router, and SSH. (practice in Metaspoitable)
+- Day 7: Review progress, any more notes, improvements? Set up Web Server, Router, and SSH. (practice in Metaspoitable)
 
 ### High Priority Services:
 Service ID 4: SSH Service (Port 22, Linux)
