@@ -1,19 +1,51 @@
 ## GAME PLAN (WINDOWS AND LINUX)
-- Kick out malicious users
-- Change default password and remove other default passwords on everything. (Team Packet, OS admin creds, all other application admin creds and rogue admin accounts). API's and cockpit servers also. 
-- Set up default ufw firewall, deny all incoming, allow outgoing (only for those that need, restrict others) for all hosts and network. Close all services that are not scored, outbound only established connections)
-- Patch any easily exploits (EternalBlue, PwnKit, ZeroLogon) or block ports they use.
-  - outdated software, misconfigurations, remote access, unpatched CVE's, world-writeable files
-- run hardening scripts in proxmox (secure remote access points and remote users, block unecessary network ports, disable and remove unused or uneedful protocols and services, enable application logging, perform vulerability scans)
-- Complete inject before tryout
-- Harden, harden, harden
-  - Sysinternals Suite (Find red team activity)
-  - whitelist outbound ports allowed and restrict everything else (TCP is important)
-  - Force all web traffic through proxy server to prevent malware from getting out
-  - Configure sensor to log all DNS queries and sor log to see which domains have most activity. Ones with most are usually malicious. Block it. (OR ISOLATE INTERNAL WORKSTATIONS AND SERVERS AND LET PROXY SERVER HANDLE)
-  - Regularly audit user access, running processes, running services, and kill strange processses. Read logs and verify system configuration. Limit services to only scored services and take unecessary host offline. 
-- Threat hunt (for malware)
-- Complete injects (2 & 3)
+1. Hardening Script - 15 minutes (Gather every requirement you have written. Test hardening script on every machine and that services work. Lock down very well.)
+(scripts should include this and where cannot do it manually quickly)
+- delete malicious users
+- change all passwords (Team packet, OS admin creds, application creds, API's and cockpit)
+- set up ufw firewall
+- close all services not scored, outbound only connections
+- secure remote access points and remote users
+- block ports not needed
+- disable and remove unused protocols and services
+- enable application logging
+- whitelist outbound ports allowed
+- force web traffic through proxy server
+- configure proxy to log all dns queries
+- make firewall proxy and log all DNS queries
+- make configs immutable (passwd, shadow, sudoers)
+- set up splunk
+(users, passwords, services, ports/protocols, firewall, splunk)
+
+2. Set up proxy server - 5 minutes
+
+3. Script to find vuln and then patch critical and high - 40 minutes 
+- rkhunter and lynis, Sysinternals Suite (download and run)
+- outdate software
+- misconfigurations
+- remote access
+- unpatched CVE's
+- cronjobs
+- wrong permissions
+- weird files with scripts
+- backdoors
+*FIX AS MUCH AS CAN IN AN HOUR*
+
+4. Get services up and running - 30 minutes (let cook for rest of the time)
+- find out prior to competition
+- maybe router, ssh, web server, a couple machines, ftp
+
+5. Threat hunt - 5 hours
+- audit user access
+- running processes
+- running services
+- read logs
+- verify config files
+- follow threat hunting GitHub page
+- back up configuration files so can change back
+
+6. Fill out injects 
+
 
 ### High Priority Services:
 Service ID 4: SSH Service (Port 22, Linux)
