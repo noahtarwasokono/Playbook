@@ -47,6 +47,14 @@
 
 - Fill out injects 
 
+### Progress Log
+Day 1: Tested VM's. Proxy worked for a bit then did not. Windows needs to run in admin to run script. Linux hardening worked but messed up terminal. 
+Day 2: Test this process, record specific scripts and commands, no matter how long it takes, Just go through entire process. 
+Day 3: Repeat day 2 but fast
+Day 4: Repeat but faster (practice in Metaspoitable)
+Day 5: Repeat but faster and smoother (practice in Metaspoitable)
+Day 6: Repeat but fast and smoother (practice in Metaspoitable)
+Day 7: Review progress, any more notes, improvements? (practice in Metaspoitable)
 
 ### High Priority Services:
 Service ID 4: SSH Service (Port 22, Linux)
