@@ -34,7 +34,7 @@
 
 - Get services up and running - 30 minutes (let cook for rest of the time)
   - find out prior to competition
-  - maybe router, ssh, web server, a couple machines, ftp
+  - router, linux and windows machine, web server,
 
 - Threat hunt - 5 hours
   - audit user access
