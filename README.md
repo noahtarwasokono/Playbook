@@ -2,7 +2,8 @@
 - Kick out malicious users
 - Change default password and remove other default passwords on everything. (Team Packet, OS admin creds, all other application admin creds and rogue admin accounts). API's and cockpit servers also. 
 - Set up default ufw firewall, deny all incoming, allow outgoing (only for those that need, restrict others) for all hosts and network. Close all services that are not scored, outbound only established connections)
-- Patch any easily exploits (EternalBlue, PwnKit, ZeroLogon) or block ports they use. 
+- Patch any easily exploits (EternalBlue, PwnKit, ZeroLogon) or block ports they use.
+  - outdated software, misconfigurations, remote access, unpatched CVE's, world-writeable files
 - run hardening scripts in proxmox (secure remote access points and remote users, block unecessary network ports, disable and remove unused or uneedful protocols and services, enable application logging, perform vulerability scans)
 - Complete inject before tryout
 - Harden, harden, harden
